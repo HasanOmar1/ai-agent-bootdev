@@ -1,3 +1,3 @@
 # ai-agent-bootdev
 
-![about](image.png)
+![about](about.png)
