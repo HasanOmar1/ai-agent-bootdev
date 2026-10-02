@@ -12,33 +12,33 @@ def get_files_info(working_directory: str, directory: str = ".") -> str:
         
         if not os.path.isdir(target_dir):
             return f'Error: "{directory}" is not a directory'
-        else:
-            content = os.listdir(target_dir)
-            data = []
+        
+        content = os.listdir(target_dir)
+        data = []
             
                     
-            for c in content:
-                name = c
-                path = os.path.join(target_dir,name)
-                size = os.path.getsize(path)
-                is_dir = os.path.isdir(path)
+        for c in content:
+            name = c
+            path = os.path.join(target_dir,name)
+            size = os.path.getsize(path)
+            is_dir = os.path.isdir(path)
             
-                details = {
-                    "name" : name,
-                    "size" : size,
-                    "is_dir" : is_dir
-                }
+            details = {
+                "name" : name,
+                "size" : size,
+                "is_dir" : is_dir
+            }
                         
-                data.append(details)
+            data.append(details)
                 
-            string_of_data = ""
-            for d in data:
-                string_of_data += f"- {d["name"]}: file_size={d["size"]} bytes, is_dir={d["is_dir"]}\n"
+        string_of_data = ""
+        for d in data:
+            string_of_data += f"- {d["name"]}: file_size={d["size"]} bytes, is_dir={d["is_dir"]}\n"
                 
-            return string_of_data
+        return string_of_data
 
     except Exception as e:
-        return f"Error: ${e}"
+        return f"Error: {e}"
         
     
     

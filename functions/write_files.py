@@ -24,7 +24,7 @@ def write_file(working_directory: str, file_path: str, content: str) -> str:
                
                     
     except Exception as e:
-            return f"Error: ${e}"
+            return f"Error: {e}"
               
                     
                     
