@@ -21,7 +21,7 @@ def run_python_file(working_directory: str, file_path: str, args: list[str] | No
         if args:
             command.extend(args)  
         
-        result = subprocess.run(command , capture_output=True , text=True , timeout=30)
+        result = subprocess.run(command , capture_output=True , text=True , timeout=30 , cwd=working_dir_abs)
         
         output = ""
       
