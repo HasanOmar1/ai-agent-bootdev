@@ -2,6 +2,7 @@ import os
 from dotenv import load_dotenv
 from openai import OpenAI
 import argparse
+from prompts import system_prompt
 
 
 
@@ -23,12 +24,14 @@ def main():
     )   
     
     messages = [
+        {"role": "system", "content": system_prompt},
         {"role": "user", "content": args.user_prompt},
     ]
 
     response = client.chat.completions.create(
         model = "openrouter/free",
-        messages = messages
+        messages = messages,
+        temperature = 0,
     )
     
     if response.usage is not None:
