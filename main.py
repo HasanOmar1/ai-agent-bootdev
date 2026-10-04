@@ -3,8 +3,7 @@ from dotenv import load_dotenv
 from openai import OpenAI
 import argparse
 from prompts import system_prompt
-from call_function import available_functions
-import json
+from call_function import available_functions, call_function
 
 
 def main():
@@ -32,7 +31,7 @@ def main():
     response = client.chat.completions.create(
         model = "openrouter/free",
         messages = messages,
-        # temperature = 0,
+        temperature = 0,
         tools = available_functions,
     )
     
@@ -53,8 +52,13 @@ def main():
     
     if message.tool_calls:
         for tool_call in message.tool_calls:
-            function_args = json.loads(tool_call.function.arguments or "{}")
-            print(f"Calling function: {tool_call.function.name}({function_args})")
+            result_message = call_function(tool_call , args.verbose)
+            if result_message["content"] == "":
+                raise Exception("Error: content is empty")
+            
+            if args.verbose:
+                print(f"-> {result_message['content']}")
+
     else:
         print(response.choices[0].message.content)
     
