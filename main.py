@@ -4,7 +4,7 @@ from openai import OpenAI
 import argparse
 from prompts import system_prompt
 from call_function import available_functions, call_function
-
+import sys
 
 def main():
     load_dotenv()
@@ -27,40 +27,51 @@ def main():
         {"role": "system", "content": system_prompt},
         {"role": "user", "content": args.user_prompt},
     ]
-
-    response = client.chat.completions.create(
-        model = "openrouter/free",
-        messages = messages,
-        temperature = 0,
-        tools = available_functions,
-    )
     
-    if response.usage is not None:
-        prompt_tokens = response.usage.prompt_tokens
-        completion_tokens = response.usage.completion_tokens
+    for _ in range(20):
         
-        if args.verbose:  
-            print(f"User prompt: {args.user_prompt}")
-            print(f"Prompt tokens: {prompt_tokens}")
-            print(f"Response tokens: {completion_tokens}")
-    else:
-        raise RuntimeError("Response usage is not found")
-    
-    
-    message = response.choices[0].message
-    print("Response:")        
-    
-    if message.tool_calls:
-        for tool_call in message.tool_calls:
-            result_message = call_function(tool_call , args.verbose)
-            if result_message["content"] == "":
-                raise Exception("Error: content is empty")
+        response = client.chat.completions.create(
+            model = "openrouter/free",
+            messages = messages,
+            temperature = 0,
+            tools = available_functions,
+        )
+        
+        if response.usage is not None:
+            prompt_tokens = response.usage.prompt_tokens
+            completion_tokens = response.usage.completion_tokens
             
-            if args.verbose:
-                print(f"-> {result_message['content']}")
+            if args.verbose:  
+                print(f"User prompt: {args.user_prompt}")
+                print(f"Prompt tokens: {prompt_tokens}")
+                print(f"Response tokens: {completion_tokens}")
+                
+        else:
+            raise RuntimeError("Response usage is not found")
+    
+        message = response.choices[0].message
+        messages.append(message)
 
-    else:
-        print(response.choices[0].message.content)
+        if message.tool_calls:
+            for tool_call in message.tool_calls:
+                result_message = call_function(tool_call , args.verbose)
+                messages.append(result_message)
+                
+                if result_message["content"] == "":
+                    print("Error: content is empty")
+                    sys.exit(1)
+   
+                if args.verbose:
+                    print(f"-> {result_message['content']}")
+                                     
+        else:
+            print("Response:")  
+            print(message.content)
+            return 
+            
+    print("Error: maximum iterations reached")
+    sys.exit(1)
+            
     
 
 
