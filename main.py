@@ -50,7 +50,7 @@ def main():
             raise RuntimeError("Response usage is not found")
     
         message = response.choices[0].message
-        messages.append(message)
+        messages.append(message.model_dump())
 
         if message.tool_calls:
             for tool_call in message.tool_calls:
